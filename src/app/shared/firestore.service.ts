@@ -31,7 +31,7 @@ export class FirestoreService {
 
   constructor(public af: AngularFirestore) {
     this.messageCollection = this.af.collection<IMessage>('chat', (ref) =>
-      ref.orderBy('timestamp', 'desc')
+      ref.orderBy('timestamp')
     );
     this.userCollection = this.af.collection<IUser>('users');
   }
