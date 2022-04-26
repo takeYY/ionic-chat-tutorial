@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ModalController, IonContent } from '@ionic/angular';
+import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
-import { FirestoreService } from '../shared/firestore.service';
+import { FirestoreService, IUser, IChat } from '../shared/firestore.service';
 import { ProfilePage } from '../shared/profile/profile.page';
 
 @Component({
@@ -11,6 +12,13 @@ import { ProfilePage } from '../shared/profile/profile.page';
 })
 export class Tab1Page implements OnInit {
   message = '';
+  uid: string;
+  user: IUser;
+  chat: Observable<IChat[]>;
+
+  @ViewChild(IonContent, { static: true })
+  content: IonContent;
+
   constructor(
     public modalController: ModalController,
     public auth: AuthService,
@@ -24,6 +32,32 @@ export class Tab1Page implements OnInit {
         component: ProfilePage,
       });
       await modal.present();
+      modal.onWillDismiss().then(() => this.ionViewWillEnter());
     }
+    this.chat = this.firestore.chatInit();
+  }
+
+  async ionViewWillEnter() {
+    this.uid = await this.auth.getUserId();
+    this.user = await this.firestore.userInit(this.uid);
+  }
+
+  postMessage() {
+    if (!this.user) {
+      alert('プロフィール登録が必要です。');
+      return;
+    }
+
+    this.firestore.messageAdd({
+      uid: this.uid,
+      message: this.message,
+      timestamp: Date.now(),
+    });
+    this.message = '';
+    this.content.scrollToTop(100);
+  }
+
+  trackByFn(index, item) {
+    return item.messageId;
   }
 }
