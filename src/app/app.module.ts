@@ -9,10 +9,9 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import { AngularFireModule } from '@angular/fire/compat';
 import { environment } from '../environments/environment';
 import { AuthGuard } from '@angular/fire/auth-guard';
-import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import {
   HammerGestureConfig,
   HAMMER_GESTURE_CONFIG,
@@ -45,10 +44,12 @@ export class IonicGestureConfig extends HammerGestureConfig {
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    AngularFireModule.initializeApp(environment.firebase),
-    AngularFirestoreModule,
     provideFirebaseApp(() => initializeApp(environment.firebase)),
-    provideAuth(() => {
+    provideFirestore(() => getFirestore()),
+    provideAuth(() =>
+      initializeAuth(getApp(), { persistence: indexedDBLocalPersistence })
+    ),
+    /* provideAuth(() => {
       if (Capacitor.isNativePlatform()) {
         return initializeAuth(getApp(), {
           persistence: indexedDBLocalPersistence,
@@ -56,7 +57,7 @@ export class IonicGestureConfig extends HammerGestureConfig {
       } else {
         return getAuth();
       }
-    }),
+    }), */
   ],
   providers: [
     StatusBar,
