@@ -11,7 +11,7 @@ import { AppComponent } from './app.component';
 
 import { AngularFireModule } from '@angular/fire/compat';
 import { environment } from '../environments/environment';
-import { AngularFireAuthGuard } from '@angular/fire/compat/auth-guard';
+import { AuthGuard } from '@angular/fire/auth-guard';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import {
   HammerGestureConfig,
@@ -61,7 +61,7 @@ export class IonicGestureConfig extends HammerGestureConfig {
   providers: [
     StatusBar,
     SplashScreen,
-    AngularFireAuthGuard,
+    AuthGuard,
     { provide: HAMMER_GESTURE_CONFIG, useClass: IonicGestureConfig },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
